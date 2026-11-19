@@ -2,7 +2,7 @@
 
 OneFI is a clickable, offline prototype of a banking, payments and investing app with an AI assistant at its centre. It runs as an Android APK with no backend: all data is simulated, and the assistant's "thinking" and processing steps are staged so the app can be demoed end to end.
 
-Download the latest APK: [apk/OneFI-v1.7.3.apk](apk/OneFI-v1.7.3.apk).
+Download the latest APK: [apk/OneFI-v1.7.4.apk](apk/OneFI-v1.7.4.apk).
 
 ![Launch and briefing](docs/launch-and-briefing.png)
 
@@ -20,19 +20,22 @@ Download the latest APK: [apk/OneFI-v1.7.3.apk](apk/OneFI-v1.7.3.apk).
 
 ## Demo flow
 
-1. Pay $1,000 to Shroff.
-2. Pay the Rogers internet bill ($89.99).
-3. Open a $5,000 AMEX term deposit at 4.85% for 12 months (+$242.50).
-4. Buy 500 FIS through E*TRADE at $27.07.
-5. Order a Thanksgiving turkey for each of six teammates from Kroger, paid with the OneFI Metal card.
+1. Pay $1,000 to Shroff from a linked Citi account.
+2. Update the expiring Citi password through a secure handoff to Citi (OneFI never sees the password).
+3. Pay the Rogers internet bill ($89.99) from BMO Harris.
+4. Open a $5,000 AMEX term deposit at 4.85% for 12 months (+$242.50).
+5. Buy 500 FIS through E*TRADE at $27.07.
+6. Order a Thanksgiving turkey for each of six teammates from Kroger, paid with the OneFI Metal card.
 
 Any 4‑digit PIN, or the fingerprint button, unlocks the app and confirms actions. The ⋮ menu in OneFI has a demo mode that types each step for you, and an option to restart the demo.
+
+![Linked banks and the Citi password handoff](docs/logos-and-password.png)
 
 ![Thanksgiving flow](docs/thanksgiving-flow.png)
 
 ## Install
 
-Download [`apk/OneFI-v1.7.3.apk`](apk/OneFI-v1.7.3.apk) and open it on an Android phone (Android 7.0 or later). You'll need to allow installs from your browser or file manager. The APK is signed with a self-signed key.
+Download [`apk/OneFI-v1.7.4.apk`](apk/OneFI-v1.7.4.apk) and open it on an Android phone (Android 7.0 or later). You'll need to allow installs from your browser or file manager. The APK is signed with a self-signed key.
 
 ## Build from source
 
@@ -63,5 +66,6 @@ apk/            the latest built APK
 
 ## Notes
 
-- All people, balances, addresses and orders are made up. Brand names (Rogers, AMEX, E*TRADE, Kroger, Interac) appear as text only, for the demo story.
+- All people, balances, addresses and orders are made up.
+- The Citi, BMO Harris and E*TRADE logos in `web/js/logos.js` were supplied by the project owner to identify linked accounts in the demo; they belong to their respective companies. Other brand names (Rogers, AMEX, Kroger, Interac) appear as text only.
 - Fonts are open-source (SIL Open Font License): DM Sans, Inter, Outfit, Instrument Sans/Serif, Geist Mono.

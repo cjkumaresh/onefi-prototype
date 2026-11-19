@@ -1273,3 +1273,48 @@ html[data-theme] .br-go:active{transform:scale(.96)}
 @media (prefers-reduced-motion:reduce){.tgcard,.tg-glow,.tg-avs .tm-av{animation:none}}
 .tkcard .cacts .o{flex:0 0 auto;padding:0 18px}
 .tkcard .cacts .f{flex:1;min-width:0}
+
+/* ───────── v1.7.4: institution logos, Citi password ───────── */
+.blogo{display:inline-grid;place-items:center;flex-shrink:0;background:#fff;border-radius:50%;width:36px;height:36px;box-shadow:0 1px 3px rgba(30,30,60,.12),inset 0 0 0 1px rgba(28,28,31,.05);overflow:hidden;box-sizing:border-box}
+.blogo img{display:block;max-width:78%;max-height:62%;object-fit:contain}
+.blogo.bmo img{max-width:100%;max-height:100%}
+.blogo.bmo{background:transparent;box-shadow:none}
+.blogo.etrade{width:64px;border-radius:12px}
+.blogo.etrade img{max-width:86%;max-height:56%}
+.blogo.txt b{font:800 9.5px/1 var(--font-body);letter-spacing:.02em;color:#1F5AA6}
+.blogo.amex{background:#EAF1FB}
+.blogo.sm{width:26px;height:26px}
+.blogo.sm.etrade{width:48px;border-radius:8px}
+.blogo.sm.txt b{font-size:7.5px}
+.blogo.lg{width:44px;height:44px}
+.blogo.lg.etrade{width:80px;border-radius:14px}
+.blogo.xl{width:72px;height:72px}
+.blogo.alogo{width:38px;height:38px}
+.inst{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
+.inst .ilogo{display:block;height:16px;width:auto}
+.inst .ilogo.bmo{height:18px}
+.inst .ilogo.etrade{height:13px}
+.ibadge{font:800 9px/1 var(--font-body);letter-spacing:.02em;color:#1F5AA6;background:#EAF1FB;border-radius:5px;padding:4px 5px}
+
+.pwcard{width:100%;box-sizing:border-box;margin-top:4px;border-radius:24px;padding:16px;background:rgba(255,255,255,.64);border:1px solid rgba(255,255,255,.95);box-shadow:inset 0 1px 0 #fff,0 10px 28px rgba(50,50,100,.07);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);animation:fadeUp .45s cubic-bezier(.2,.8,.2,1) both;transition:opacity .3s}
+.pwcard.locked{opacity:.55;pointer-events:none}
+.pw-top{display:flex;align-items:center;justify-content:space-between}
+.pw-pill{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:rgba(214,120,40,.12);color:#A4520F;font-size:12px;font-weight:600}
+.pw-pill b{width:6px;height:6px;border-radius:50%;background:currentColor}
+.pw-pill.ok{background:rgba(30,142,90,.1);color:#1E8E5A}
+.pw-h{font-size:16px;font-weight:600;margin-top:14px;letter-spacing:-.01em}
+.pw-s{font-size:13px;color:var(--text-2);margin-top:4px;line-height:1.45}
+.pwcard .cacts{margin-top:16px}
+.pwcard .cacts .o{flex:0 0 auto;padding:0 16px}
+.pwcard .cacts .f{flex:1}
+.pw-kv{margin-top:12px;border-top:1px solid rgba(28,28,31,.07);padding-top:6px}
+.pw-kv > div{display:flex;justify-content:space-between;font-size:13px;padding:5px 0}
+.pw-kv > div span:first-child{color:var(--text-2)}
+.ho{display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 6px 6px}
+.ho h3{margin:18px 0 0}
+.ho p{margin:6px 0 0;font-size:14px;color:var(--text-2);line-height:1.45;max-width:290px}
+.ho-st{display:flex;align-items:center;gap:10px;margin-top:22px;padding:12px 16px;border-radius:16px;background:rgba(28,28,31,.04);font-size:14px;font-weight:500}
+.ho-lock{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:12px;color:var(--text-2)}
+html .row > .blogo.alogo,html .offer .row > .blogo.alogo{width:38px!important;height:38px!important;min-width:0;flex:0 0 38px;padding:0}
+.tk-who .blogo.sm.etrade{width:52px;height:24px}
+html .row > .blogo.alogo{align-self:center!important;max-height:38px!important;aspect-ratio:1/1}

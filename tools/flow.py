@@ -13,7 +13,7 @@ async def main():
         n=[0]
         async def shot(name, w=0):
             if w: await pg.wait_for_timeout(int(w*1.76))
-            n[0]+=1; await pg.screenshot(path=f'renders/flow14/{THEME}_{n[0]:02d}_{name}.png')
+            n[0]+=1; await pg.screenshot(path=f'renders/flow15/{THEME}_{n[0]:02d}_{name}.png')
         async def c(sel, w=500, scope='top'):
             js = f"(()=>{{const r=({TOP if scope=='top' else "[...document.querySelectorAll('.sheet')].pop()||[...document.querySelectorAll('#app > .screen')].pop()"})||document;const e=r.querySelector({sel!r})||document.querySelector({sel!r});if(!e)throw new Error('missing '+{sel!r});e.click();}})()"
             await pg.evaluate(js); await pg.wait_for_timeout(int(w*1.76))

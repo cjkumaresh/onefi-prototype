@@ -104,6 +104,8 @@ const D = {
     { id: 's2', fund: 'Global Equity Fund', amt: 250, day: '15th', next: 'Dec 15' },
   ],
   linked: {
+    citi: { name: 'Citi Checking', bank: 'Citi', num: '6120', bal: 9842.17, pwDays: 3, pwOk: false },
+    bmo: { name: 'BMO Harris Checking', bank: 'BMO Harris', num: '3307', bal: 6215.40 },
     amex: { name: 'AMEX Savings', bank: 'AMEX Bank', num: '7731', bal: 18400.00 },
     etrade: { name: 'E*TRADE Brokerage', num: '2209', buyingPower: 52380.00 },
   },

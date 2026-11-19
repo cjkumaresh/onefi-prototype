@@ -1,5 +1,5 @@
 // OneFI — conversational banking (storyboard flow + analytics), fully simulated.
-const SCRIPT = ['Pay $1,000 to Shroff', 'Now pay my internet bill', 'Make a term deposit with $5,000', 'I am bullish on FIS, can you buy 500 shares for me?', 'Order a turkey for each of my team members for Thanksgiving'];
+const SCRIPT = ['Pay $1,000 to Shroff', 'Update my Citi password', 'Now pay my internet bill', 'Make a term deposit with $5,000', 'I am bullish on FIS, can you buy 500 shares for me?', 'Order a turkey for each of my team members for Thanksgiving'];
 const AS = { html: null, busy: false, pending: null, script: 0, demo: store.get('demo', true), confirm: store.get('askFirst', false), seq: 0 };
 
 const clock = (d = new Date()) => d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
@@ -20,6 +20,7 @@ function findContact(q) {
 function intent(q) {
   const ql = q.toLowerCase().trim();
   if (AS.pending && AS.pending.k === 'turkey' && /^(place order|order it|yes|yep|sure|ok|okay|go ahead|do it|confirm)\b/.test(ql)) return { k: 'turkeyOrder' };
+  if (/\bpassword\b/.test(ql)) return { k: 'citipw' };
   if (/\btrack\b.*\b(turkey|deliver)/.test(ql)) return { k: 'turkeyTrack' };
   if (/\bturkey|\bthanksgiving\b/.test(ql)) return { k: 'turkey' };
   if (AS.pending && /^(yes|yep|yeah|sure|ok|okay|go ahead|yes,? go ahead|do it|confirm|please do)\b/.test(ql)) return { k: 'yes' };
@@ -119,8 +120,8 @@ function setRail(items, noNext) {
 
 /* live activity card: ring + timeline */
 const STEP_ICONS = { send: ['shield', 'coins', 'send'], bill: ['receipt', 'bank', 'send'], td: ['user', 'bank', 'percent'], tdc: ['finger', 'swap', 'shield'], buy: ['bank', 'invest', 'repeat'], look: ['search', 'pie', 'spark'] };
-const SUMMARY = { turkey: 'Kroger checked, turkeys in stock, slots open', tord: 'Addresses verified, paid, 6 deliveries scheduled', send: 'Payee verified, funds checked, sent securely', bill: 'Bill found, paid from Chequing, submitted', td: 'Accounts reviewed, 5 rates compared', tdc: 'Consent confirmed, funds moved, deposit opened', buy: 'E*TRADE linked, quote checked, order placed', look: 'Accounts analysed' };
-const STEP_STATES = { turkey: ['search', 'search', 'compare'], tord: ['verify', 'send', 'send'], send: ['verify', 'search', 'send'], bill: ['search', 'bill', 'send'], td: ['search', 'search', 'compare'], tdc: ['verify', 'send', 'save'], buy: ['search', 'thinking', 'invest'], look: ['search', 'compare', 'thinking'] };
+const SUMMARY = { pw: 'Secure handoff, Citi confirmed, connection refreshed', turkey: 'Kroger checked, turkeys in stock, slots open', tord: 'Addresses verified, paid, 6 deliveries scheduled', send: 'Payee verified, funds checked, sent securely', bill: 'Bill found, paid from Chequing, submitted', td: 'Accounts reviewed, 5 rates compared', tdc: 'Consent confirmed, funds moved, deposit opened', buy: 'E*TRADE linked, quote checked, order placed', look: 'Accounts analysed' };
+const STEP_STATES = { pw: ['verify', 'search', 'verify'], turkey: ['search', 'search', 'compare'], tord: ['verify', 'send', 'send'], send: ['verify', 'search', 'send'], bill: ['search', 'bill', 'send'], td: ['search', 'search', 'compare'], tdc: ['verify', 'send', 'save'], buy: ['search', 'thinking', 'invest'], look: ['search', 'compare', 'thinking'] };
 function flowHTML(f) {
   return `<div class="mflow"><div class="mf-in">
     <div class="mf-end">${f.a.av}<div class="mf-k">${f.a.t}</div><div class="mf-v" data-bal>${moneyT(f.a.bal)}</div></div>
@@ -181,6 +182,9 @@ function burst() {
   return `<div class="burst">${Array.from({ length: 18 }, (_, i) => { const a = (i / 18) * Math.PI * 2 + Math.random() * .3, d = 60 + Math.random() * 60; return `<i style="--x:${Math.cos(a) * d}px;--y:${Math.sin(a) * d - 10}px;--r:${Math.random() * 360}deg;${i % 3 ? '' : 'border-radius:50%;'}${i % 4 ? '' : 'width:4px;height:9px;'}"></i>`; }).join('')}</div>`;
 }
 function amtHTML(v) { const t = moneyT(v); const [w, c] = t.split('.'); return `${w}<span class="c">.${c}</span>`; }
+/* institution marks: the owner-supplied logos, or a plain text badge where none was supplied */
+function BLOGO(k, cls = '') { return LOGOS[k] ? `<span class="blogo ${k} ${cls}"><img src="${LOGOS[k]}" alt="${k}"></span>` : `<span class="blogo ${k} txt ${cls}"><b>${k.toUpperCase()}</b></span>`; }
+function INST(k, text) { return `<span class="inst">${LOGOS[k] ? `<img class="ilogo ${k}" src="${LOGOS[k]}" alt="${k}">` : `<b class="ibadge ${k}">${k.toUpperCase()}</b>`}<span>${text}</span></span>`; }
 function ticket({ amount, big, label, who, rows, extra, ref: rf, note, actions, status = 'Completed' }) {
   return `<div class="ticket">
     <div class="tk-top"><div class="tk-row"><div class="tk-brand">${halo('ready', 18, 'still')}OneFI</div><div class="tk-pill"><b></b>${status}</div></div>
@@ -283,17 +287,18 @@ const FLOWS = {
       quickReplies(col, [`Pay ${moneyT(Math.floor(chq().bal), { noCents: true })} to ${c.name.split(' ')[0]}`, 'My accounts']); return;
     }
     const email = c.handle.includes('@') && c.handle.includes('.') ? c.handle : c.handle.replace('@', '') + '@email.com';
-    if (AS.confirm && !(await confirmCard(col, `Send ${moneyT(amt)} to ${c.name}`, [['From', `Everyday Chequing ••${NB}4821`], ['To', `${c.name} (${email})`], ['Method', 'Interac e‑Transfer®']], `Send ${moneyT(amt)}`))) { await botSay(col, 'Okay, I’ve cancelled that. Nothing was sent.'); working(false); return; }
+    if (AS.confirm && !(await confirmCard(col, `Send ${moneyT(amt)} to ${c.name}`, [['From', `Citi Checking ••${NB}6120`], ['To', `${c.name} (${email})`], ['Method', 'Interac e‑Transfer®']], `Send ${moneyT(amt)}`))) { await botSay(col, 'Okay, I’ve cancelled that. Nothing was sent.'); working(false); return; }
     const card = await progressCard(col, 'Sending payment', `Interac e‑Transfer® to ${c.name}`, [
-      `Payee verified · ${c.name} (${email})`, `Funds available in Chequing ••${NB}4821 · Balance ${moneyT(chq().bal)}`, `Sending ${moneyT(amt)} securely… · Encrypted end to end`], 'send', { a: { av: ME(), t: 'Chequing', bal: chq().bal }, b: { av: avatar(c), t: c.name.split(' ')[0] }, amt });
+      `Payee verified · ${c.name} (${email})`, `Funds available in Citi Checking ••${NB}6120 · Balance ${moneyT(D.linked.citi.bal)}`, `Sending ${moneyT(amt)} securely… · Encrypted end to end`], 'send', { a: { av: BLOGO('citi'), t: 'Citi Checking', bal: D.linked.citi.bal }, b: { av: avatar(c), t: c.name.split(' ')[0] }, amt });
     card.remove();
-    chq().bal -= amt;
-    D.tx.unshift({ id: 't' + Date.now(), name: c.name, amt: -amt, date: new Date(2026, 10, 18), time: clock(), note: 'Interac e‑Transfer', cat: 'transfer', hue: c.hue, acct: 'chk', person: true });
+    D.linked.citi.bal -= amt;
+    D.tx.unshift({ id: 't' + Date.now(), name: c.name, amt: -amt, date: new Date(2026, 10, 18), time: clock(), note: 'Interac e‑Transfer', cat: 'transfer', hue: c.hue, acct: 'citi', person: true });
     await botSay(col, `Done! Your money is on its way to ${c.name}. ✅`, { dots: 250 });
     const rf = ref('ET-', 7);
-    await finish(col, '', ticket({ amount: amt, label: `Sent to ${c.name}`, who: { av: avatar(c), t: email }, rows: [['From', `Everyday Chequing ••${NB}4821`], ['Method', 'Interac e‑Transfer®'], ['Confirmation', rf], ['Date', `${longDate()} · ${clock()}`], ['New balance', moneyT(chq().bal)]], ref: rf, note: `${c.name.split(' ')[0]} gets an email and can deposit right away.`, actions: [['Share receipt', 'share'], ['Done', 'done', 1]] }));
+    await finish(col, '', ticket({ amount: amt, label: `Sent to ${c.name}`, who: { av: avatar(c), t: email }, rows: [['From', INST('citi', `Checking ••${NB}6120`)], ['Method', 'Interac e‑Transfer®'], ['Confirmation', rf], ['Date', `${longDate()} · ${clock()}`], ['Citi balance', moneyT(D.linked.citi.bal)]], ref: rf, note: `${c.name.split(' ')[0]} gets an email and can deposit right away.`, actions: [['Share receipt', 'share'], ['Done', 'done', 1]] }));
     if (/shroff/i.test(c.name)) AS.script = Math.max(AS.script, 1);
     setRail([{ t: 'Send another payment', i: 'send' }, { t: 'My accounts', i: 'bank' }]);
+    if (!D.linked.citi.pwOk) await pwAlert(col);
   },
 
   async bill(col, it) {
@@ -305,12 +310,12 @@ const FLOWS = {
     if (!b) { await botSay(col, `Your ${it.biller === 'Rogers' ? 'Rogers Internet' : it.biller} bill is already paid. I’ll remind you when the next one arrives.`); return; }
     const due = addDays(b.days), dueS = `${MONTHS[due.getMonth()]} ${due.getDate()}`;
     const acct = b.acct || (2000 + b.amt * 7 | 0).toString().slice(-4);
-    if (AS.confirm && !(await confirmCard(col, `Pay ${b.name} ${moneyT(b.amt)}`, [['From', `Everyday Chequing ••${NB}4821`], ['Account', `••${NB}` + acct], ['Due', dueS]], `Pay bill · ${moneyT(b.amt)}`))) { await botSay(col, 'No problem, the bill is still unpaid.'); working(false); return; }
+    if (AS.confirm && !(await confirmCard(col, `Pay ${b.name} ${moneyT(b.amt)}`, [['From', `BMO Harris Checking ••${NB}3307`], ['Account', `••${NB}` + acct], ['Due', dueS]], `Pay bill · ${moneyT(b.amt)}`))) { await botSay(col, 'No problem, the bill is still unpaid.'); working(false); return; }
     const card = await progressCard(col, 'Paying your bill', `${b.name} · Acct ••${NB}${acct}`, [
-      `Latest bill found · ${moneyT(b.amt)} due ${dueS}`, `Paying from Everyday Chequing ••${NB}4821`, 'Submitting payment to payee… · Posts in 1 business day'], 'bill', { a: { av: ME(), t: 'Chequing', bal: chq().bal }, b: { av: LOGO(b.name[0], 'rg'), t: b.name.split(' ')[0] }, amt: b.amt });
+      `Latest bill found · ${moneyT(b.amt)} due ${dueS}`, `Paying from BMO Harris Checking ••${NB}3307 · Balance ${moneyT(D.linked.bmo.bal)}`, 'Submitting payment to payee… · Posts in 1 business day'], 'bill', { a: { av: BLOGO('bmo'), t: 'BMO Harris', bal: D.linked.bmo.bal }, b: { av: LOGO(b.name[0], 'rg'), t: b.name.split(' ')[0] }, amt: b.amt });
     card.remove();
-    chq().bal -= b.amt; D.bills = D.bills.filter(x => x !== b);
-    D.tx.unshift({ id: 't' + Date.now(), name: b.name, amt: -b.amt, date: new Date(2026, 10, 18), time: clock(), note: 'Bill payment', cat: 'bills', hue: 12, acct: 'chk', person: false });
+    D.linked.bmo.bal -= b.amt; D.bills = D.bills.filter(x => x !== b);
+    D.tx.unshift({ id: 't' + Date.now(), name: b.name, amt: -b.amt, date: new Date(2026, 10, 18), time: clock(), note: 'Bill payment', cat: 'bills', hue: 12, acct: 'bmo', person: false });
     const kind = /internet/i.test(b.name) ? 'internet' : /power/i.test(b.name) ? 'electricity' : /water/i.test(b.name) ? 'water' : /mobile/i.test(b.name) ? 'phone' : 'rent';
     await botSay(col, `Your ${kind} bill is paid. You’re all set until next month. 🎉`, { dots: 250 });
     const hist = [['Jun', +(b.amt * .944).toFixed(2)], ['Jul', b.amt], ['Aug', +(b.amt * 1.05).toFixed(2)], ['Sep', b.amt], ['Oct', +(b.amt * .97).toFixed(2)], ['Nov', b.amt]];
@@ -320,8 +325,8 @@ const FLOWS = {
       <div class="minibars">${hist.map(([m, v], i) => `<div><i style="height:${Math.round(14 + (v - mn) / (mx - mn) * 34)}px;animation-delay:${i * .05}s"></i><span>${m}</span></div>`).join('')}</div>
       <div class="inline-sug">${ic('repeat')}<div>Turn on autopay so ${b.name} is paid on the due date.</div><button data-a="autopay" data-n="${esc(b.name)}">Turn on</button></div>`;
     const rf = ref('BP-', 7);
-    await finish(col, '', ticket({ amount: b.amt, label: `Paid to ${b.name}`, who: { av: `<div class="avatar" style="width:26px;height:26px">${ic(b.icon, 'xs')}</div>`, t: `Account ••${NB}${acct}` }, rows: [['Account', `••${NB}` + acct], ['From', `Everyday Chequing ••${NB}4821`], ['Confirmation', rf], ['Posted', longDate()]], extra, ref: rf, actions: [['View bill', 'bill', 0, `data-n="${esc(b.name)}" data-v="${b.amt}" data-acct="${acct}"`], ['Done', 'done', 1]] }));
-    if (/Rogers/.test(b.name)) AS.script = Math.max(AS.script, 2);
+    await finish(col, '', ticket({ amount: b.amt, label: `Paid to ${b.name}`, who: { av: `<div class="avatar" style="width:26px;height:26px">${ic(b.icon, 'xs')}</div>`, t: `Account ••${NB}${acct}` }, rows: [['Account', `••${NB}` + acct], ['From', INST('bmo', `Checking ••${NB}3307`)], ['Confirmation', rf], ['Posted', longDate()]], extra, ref: rf, actions: [['View bill', 'bill', 0, `data-n="${esc(b.name)}" data-v="${b.amt}" data-acct="${acct}"`], ['Done', 'done', 1]] }));
+    if (/Rogers/.test(b.name)) AS.script = Math.max(AS.script, 3);
     setRail([{ t: 'What bills are left?', i: 'bill' }, { t: 'My accounts', i: 'bank' }]);
   },
 
@@ -347,15 +352,15 @@ const FLOWS = {
   async tdCreate(col, p) {
     const offer = document.getElementById(p.card); if (offer) { $$('.cacts', offer).forEach(c => c.classList.add('dim')); const f = $('.cacts .f', offer); f && f.classList.add('chosen'); }
     if (AS.confirm && !(await confirmCard(col, `Open ${moneyT(p.amt)} term deposit`, [['Bank', 'AMEX Bank'], ['Rate', p.rate.toFixed(2) + '% p.a. (fixed)'], ['Term', p.months + ' months']], 'Open deposit'))) { await botSay(col, 'Okay, I didn’t open it. The offer is valid for 7 days.'); working(false); return; }
-    const card = await progressCard(col, 'Creating term deposit', `AMEX Bank · ${p.months} months @ ${p.rate.toFixed(2)}%`, ['Identity & consent confirmed · Open banking consent ✓', `${moneyT(p.amt)} moved from AMEX Savings ••${NB}${D.linked.amex.num}`, 'Opening your term deposit… · Rate locked'], 'tdc', { a: { av: LOGO('AMEX', 'ax'), t: 'AMEX Savings', bal: D.linked.amex.bal }, b: { av: LOGO(ic('lock'), 'vault'), t: 'Term deposit' }, amt: p.amt });
+    const card = await progressCard(col, 'Creating term deposit', `AMEX Bank · ${p.months} months @ ${p.rate.toFixed(2)}%`, ['Identity & consent confirmed · Open banking consent ✓', `${moneyT(p.amt)} moved from AMEX Savings ••${NB}${D.linked.amex.num}`, 'Opening your term deposit… · Rate locked'], 'tdc', { a: { av: BLOGO('amex'), t: 'AMEX Savings', bal: D.linked.amex.bal }, b: { av: LOGO(ic('lock'), 'vault'), t: 'Term deposit' }, amt: p.amt });
     card.remove();
     D.linked.amex.bal -= p.amt;
     const mat = addMonths(p.months), refn = 'TD-AX-' + Math.floor(10000 + Math.random() * 89999);
     D.deposits.push({ amt: p.amt, rate: p.rate, months: p.months, mat, ref: refn });
     await botSay(col, `All done! 🎉 Your ${moneyT(p.amt, { noCents: p.amt % 1 === 0 })} term deposit with AMEX Bank is now active and earning ${p.rate.toFixed(2)}%.`, { dots: 250 });
     const extra = `<div class="inline-sug">${ic('bell')}<div>I’ll remind you 7 days before it matures on ${longDate(mat)}.</div><button data-a="remind">Got it</button></div>`;
-    await finish(col, '', ticket({ amount: p.amt, label: 'Term deposit created with AMEX Bank', status: 'Active', who: { av: `<div class="avatar" style="width:26px;height:26px;font-size:8px;font-weight:800">AMEX</div>`, t: `${p.rate.toFixed(2)}% p.a. · ${p.months} months` }, rows: [['Rate', p.rate.toFixed(2) + '% p.a. (fixed)'], ['Term', p.months + ' months'], ['Maturity date', longDate(mat)], ['Value at maturity', moneyT(p.amt + p.interest)], ['Reference', refn]], extra, ref: refn, actions: [['View details', 'td', 0, `data-i="${D.deposits.length - 1}"`], ['Done', 'done', 1]] }));
-    AS.script = Math.max(AS.script, 3);
+    await finish(col, '', ticket({ amount: p.amt, label: 'Term deposit created with AMEX Bank', status: 'Active', who: { av: BLOGO('amex', 'sm'), t: `${p.rate.toFixed(2)}% p.a. · ${p.months} months` }, rows: [['Bank', INST('amex', 'AMEX Bank')], ['Rate', p.rate.toFixed(2) + '% p.a. (fixed)'], ['Term', p.months + ' months'], ['Maturity date', longDate(mat)], ['Value at maturity', moneyT(p.amt + p.interest)], ['Reference', refn]], extra, ref: refn, actions: [['View details', 'td', 0, `data-i="${D.deposits.length - 1}"`], ['Done', 'done', 1]] }));
+    AS.script = Math.max(AS.script, 4);
     setRail([{ t: 'My accounts', i: 'bank' }, { t: 'Is my portfolio too risky?', i: 'pie' }]);
   },
 
@@ -370,7 +375,7 @@ const FLOWS = {
     const cost = it.qty * q.price;
     if (cost > et.buyingPower) { await botSay(col, `That order would cost about <b>${moneyT(cost)}</b>, more than your E*TRADE buying power of ${moneyT(et.buyingPower)}. You could buy up to <b>${Math.floor(et.buyingPower / q.price).toLocaleString()} shares</b>.`); quickReplies(col, [`Buy ${Math.floor(et.buyingPower / q.price)} shares of ${it.tick}`]); return; }
     if (AS.confirm && !(await confirmCard(col, `Buy ${it.qty} × ${it.tick}`, [['Est. cost', moneyT(cost)], ['Order type', 'Market · Day'], ['Account', `E*TRADE ••${NB}` + et.num]], 'Place order'))) { await botSay(col, 'Order cancelled. Nothing was placed.'); working(false); return; }
-    const card = await progressCard(col, 'Placing your order', `E*TRADE · Brokerage ••${NB}${et.num}`, ['Found linked E*TRADE account via aggregator', `${it.tick} quote ${moneyT(q.price)} · Buying power ${moneyT(et.buyingPower, { noCents: true })}`, `Placing market order for ${it.qty.toLocaleString()} shares… · NYSE`], 'buy', { a: { av: LOGO('E*', 'et'), t: 'Buying power', bal: et.buyingPower }, b: { av: LOGO(it.tick, 'tk'), t: `${it.qty.toLocaleString()} shares` }, amt: cost });
+    const card = await progressCard(col, 'Placing your order', `E*TRADE · Brokerage ••${NB}${et.num}`, ['Found linked E*TRADE account via aggregator', `${it.tick} quote ${moneyT(q.price)} · Buying power ${moneyT(et.buyingPower, { noCents: true })}`, `Placing market order for ${it.qty.toLocaleString()} shares… · NYSE`], 'buy', { a: { av: BLOGO('etrade'), t: 'Buying power', bal: et.buyingPower }, b: { av: LOGO(it.tick, 'tk'), t: `${it.qty.toLocaleString()} shares` }, amt: cost });
     card.remove();
     et.buyingPower -= cost;
     let h = D.holdings.find(x => x.sym === it.tick);
@@ -379,10 +384,27 @@ const FLOWS = {
     await botSay(col, `Your order was placed through your linked <b>E*TRADE</b> account and has been filled.`, { dots: 250 });
     const oid = 'ET-ORD-' + Math.floor(100000 + Math.random() * 899999);
     const real = it.tick === 'FIS';
-    await finish(col, '', ticket({ big: `${it.qty.toLocaleString()} × ${it.tick}`, label: 'Bought via E*TRADE · Filled', status: 'Filled', who: { av: `<div class="avatar" style="width:26px;height:26px;font-size:9px;font-weight:800">${it.tick}</div>`, t: q.short || q.name }, rows: [['Company', q.short || q.name], ['Order type', 'Market · Day'], ['Avg. fill price', moneyT(q.price)], ['Total cost', moneyT(cost)], ['Account', `E*TRADE Brokerage ••${NB}` + et.num], ['Order ID', oid]], extra: real ? fisQuote(it.qty, cost) : '', ref: oid, note: real ? `Market data as of ${q.asOf}. Live quotes in production.` : 'Simulated price.', actions: [['View portfolio', 'portfolio'], ['Done', 'done', 1]] }),
+    await finish(col, '', ticket({ big: `${it.qty.toLocaleString()} × ${it.tick}`, label: 'Bought via E*TRADE · Filled', status: 'Filled', who: { av: BLOGO('etrade', 'sm'), t: `Brokerage ••${NB}${et.num}` }, rows: [['Company', q.short || q.name], ['Order type', 'Market · Day'], ['Avg. fill price', moneyT(q.price)], ['Total cost', moneyT(cost)], ['Broker', INST('etrade', `Brokerage ••${NB}` + et.num)], ['Order ID', oid]], extra: real ? fisQuote(it.qty, cost) : '', ref: oid, note: real ? `Market data as of ${q.asOf}. Live quotes in production.` : 'Simulated price.', actions: [['View portfolio', 'portfolio'], ['Done', 'done', 1]] }),
       c2 => { if (!real) return; const qc = [...c2.querySelectorAll('.qchart')].pop(); if (qc) areaChart(qc, FIS_NOV.map(x => x[1]), { h: 96, color: 'var(--primary)', sw: 2, fillOpacity: .12, pad: 8 }); });
-    AS.script = Math.max(AS.script, 4);
+    AS.script = Math.max(AS.script, 5);
     setRail([{ t: 'Is my portfolio too risky?', i: 'pie' }, { t: 'My accounts', i: 'bank' }]);
+  },
+
+  async citipw(col) {
+    const L = D.linked.citi;
+    if (L.pwOk) { await botSay(col, `Your Citi password is up to date. The next change is due ${L.pwNext}.`); return; }
+    $$('.pwcard').forEach(x => x.classList.add('locked'));
+    await botSay(col, 'I’ll open Citi’s secure page. You set the new password there, and OneFI only learns that it worked.', { dots: 200 });
+    await handoff();
+    const card = await progressCard(col, 'Refreshing your Citi connection', `Citi Checking ••${NB}${L.num}`, ['Secure handoff to Citi · Encrypted · OneFI never sees your password', 'Citi confirmed your new password · Changed on Citi’s secure page', 'Connection refreshed · Payments from Citi keep working'], 'pw');
+    card.remove();
+    L.pwOk = true; L.pwNext = 'Feb 17, 2027';
+    await botSay(col, 'All set. Your Citi password is updated and the connection is refreshed. 🔒', { dots: 200 });
+    await finish(col, '', `<div class="pwcard done"><div class="pw-top">${BLOGO('citi', 'lg')}<span class="pw-pill ok"><b></b>Connected</span></div>
+      <div class="pw-h">Citi password updated</div><div class="pw-s">Changed on Citi’s secure page. Payments from Citi keep working.</div>
+      <div class="pw-kv"><div><span>Account</span><span>Citi Checking ••${NB}${L.num}</span></div><div><span>Updated</span><span>${longDate()} · ${clock()}</span></div><div><span>Next change due</span><span>${L.pwNext}</span></div></div></div>`);
+    AS.script = Math.max(AS.script, 2);
+    setRail([{ t: 'Now pay my internet bill', i: 'bill' }, { t: 'My accounts', i: 'bank' }]);
   },
 
   async turkey(col) {
@@ -393,7 +415,7 @@ const FLOWS = {
     const p = { k: 'turkey', card: 'tk' + (++AS.seq), size: 1, on: D.team.map(() => true), note: 'Thanks for a great year. Happy Thanksgiving! — Milind' };
     AS.pending = p;
     col.insertAdjacentHTML('beforeend', `<div class="tkcard" id="${p.card}">${turkeyInner(p)}</div>`);
-    stamp(col); scrollEnd(); AS.script = Math.max(AS.script, 4);
+    stamp(col); scrollEnd(); AS.script = Math.max(AS.script, 5);
     setRail([{ t: 'Place order', i: 'check' }, { t: 'Track my turkey deliveries', i: 'truck' }].slice(0, 1), true);
   },
 
@@ -415,7 +437,7 @@ const FLOWS = {
     await botSay(col, `Done. Each of your ${T.n === 6 ? 'six' : T.n} teammates gets a fresh turkey before Thursday, with your note. I’ll tell you when they’re delivered.`, { dots: 250 });
     await finish(col, '', ticket({ amount: T.total, label: `Kroger order · ${T.n} turkeys`, status: 'Confirmed', who: { av: LOGO('K', 'kr sm'), t: 'Kroger Marketplace · delivery' }, rows: [['Paid with', `OneFI Metal ••${NB}${metal.num}`], ['Points earned', `+${T.pts}`], ['Deliveries', 'Nov 24–25 · 10 AM–2 PM'], ['Order number', oid]], ref: oid, note: 'Each delivery includes your gift note.', actions: [['Track deliveries', 'ttrack'], ['Done', 'done', 1]] }),
       c2 => { c2.insertAdjacentHTML('beforeend', thanksCard(D.turkeyOrder)); });
-    AS.script = Math.max(AS.script, 5);
+    AS.script = Math.max(AS.script, 6);
     setRail([{ t: 'Track my turkey deliveries', i: 'truck' }, { t: 'My accounts', i: 'bank' }]);
   },
 
@@ -430,10 +452,10 @@ const FLOWS = {
 
   async balance(col) {
     await botSay(col, 'Here’s where your money is right now, including accounts linked through the aggregator.');
-    const rows = [['Everyday Chequing', `••${NB}4821`, chq().bal, 'bank'], ['High‑yield savings', `••${NB}0937`, D.accounts[1].bal, 'coins'], ['AMEX Savings', `••${NB}${D.linked.amex.num} · linked`, D.linked.amex.bal, 'globe'], ...D.deposits.map(d => ['AMEX term deposit', `${d.rate}% · matures ${longDate(d.mat)}`, d.amt, 'lock']), ['E*TRADE buying power', `••${NB}${D.linked.etrade.num} · linked`, D.linked.etrade.buyingPower, 'invest']];
+    const rows = [['Everyday Chequing', `••${NB}4821`, chq().bal, 'bank'], ['High‑yield savings', `••${NB}0937`, D.accounts[1].bal, 'coins'], ['Citi Checking', `••${NB}${D.linked.citi.num} · linked`, D.linked.citi.bal, 'L:citi'], ['BMO Harris Checking', `••${NB}${D.linked.bmo.num} · linked`, D.linked.bmo.bal, 'L:bmo'], ['AMEX Savings', `••${NB}${D.linked.amex.num} · linked`, D.linked.amex.bal, 'L:amex'], ...D.deposits.map(d => ['AMEX term deposit', `${d.rate}% · matures ${longDate(d.mat)}`, d.amt, 'lock']), ['E*TRADE buying power', `••${NB}${D.linked.etrade.num} · linked`, D.linked.etrade.buyingPower, 'L:etrade']];
     const tot = rows.reduce((a, r) => a + r[2], 0);
     col.insertAdjacentHTML('beforeend', `<div class="offer"><div class="of-top"><div style="position:relative;font-size:12.5px;opacity:.7">Total across ${rows.length} accounts</div><div class="of-rate" style="margin-top:8px"><b style="font-size:40px">${moneyT(tot, { noCents: true })}</b><span>Updated<br>just now</span></div></div>
-      <div class="of-body" style="padding-top:4px">${rows.map(([n, s2, v, i]) => `<div class="row" style="padding:12px 0"><div class="logo soft" style="width:38px;height:38px">${ic(i)}</div><div class="main"><div class="t1" style="font-size:14px">${n}</div><div class="t2">${s2}</div></div><div class="end"><div class="t1" style="font-size:14px">${moneyT(v)}</div></div></div>`).join('')}</div></div>`);
+      <div class="of-body" style="padding-top:4px">${rows.map(([n, s2, v, i]) => `<div class="row" style="padding:12px 0">${i.startsWith('L:') ? BLOGO(i.slice(2), 'alogo') : `<div class="logo soft" style="width:38px;height:38px">${ic(i)}</div>`}<div class="main"><div class="t1" style="font-size:14px">${n}</div><div class="t2">${s2}</div></div><div class="end"><div class="t1" style="font-size:14px">${moneyT(v)}</div></div></div>`).join('')}</div></div>`);
     stamp(col); save();
   },
 
@@ -486,6 +508,31 @@ async function handle(text) {
   working(false); AS.busy = false; save(); scrollEnd();
 }
 
+/* ───────── Citi password: alert and secure handoff ───────── */
+async function pwAlert(col) {
+  const L = D.linked.citi;
+  await wait(500 * PACE);
+  await botSay(col, `One more thing: your Citi password expires in ${L.pwDays} days. If it lapses, payments from Citi stop until it’s updated.`, { dots: 300 });
+  col.insertAdjacentHTML('beforeend', `<div class="pwcard"><div class="pw-top">${BLOGO('citi', 'lg')}<span class="pw-pill"><b></b>Expires in ${L.pwDays} days</span></div>
+    <div class="pw-h">Citi password expires soon</div><div class="pw-s">You’ll change it on Citi’s own secure page. OneFI never sees your password.</div>
+    <div class="cacts"><button class="o" data-a="pwlater"><span>Later</span></button><button class="f" data-a="say" data-t="Update my Citi password">${ic('lock', 'sm')}<span>Update on Citi</span></button></div></div>`);
+  stamp(col); scrollEnd();
+  setRail([{ t: 'Update my Citi password', i: 'lock' }, { t: 'Now pay my internet bill', i: 'bill' }]);
+}
+/* the bank's page is where the password changes; here we only show the handoff and its result */
+function handoff() {
+  return new Promise(res => {
+    Sheet.open(`<div class="ho">${BLOGO('citi', 'xl')}<h3>Continue on Citi</h3><p>You’ll set your new password on Citi’s own secure page. OneFI never sees it.</p>
+      <div class="ho-st">${halo('verify', 30)}<span id="hot">Waiting for Citi to confirm…</span></div><div class="ho-lock">${ic('lock', 'xs')} Encrypted handoff · citi.com</div></div>`, {
+      mount(sh) {
+        setTimeout(() => { const t = $('#hot', sh); if (!t) return; haloSet($('.ho-st .hq', sh), 'done'); t.textContent = 'Citi confirmed your new password'; haptic(14); }, 2600);
+        setTimeout(() => { Sheet.close(); setTimeout(res, 320); }, 3700);
+      },
+      onClose() { setTimeout(res, 330); },
+    });
+  });
+}
+
 /* ───────── Thanksgiving: turkeys for the team ───────── */
 const TK_SIZES = [['10–12 lb', 18.90], ['12–14 lb', 22.40], ['16–18 lb', 29.60]];
 const TK_DELIVERY = 5.99;
@@ -536,7 +583,7 @@ async function runBriefing() {
   AS.briefed = true;
   const col = $('.brow .bcol', t), tiles = $('.tiles', col);
   const card = document.createElement('div'); card.className = 'brief';
-  card.innerHTML = `<div class="br-head">${halo('search', 30)}<div><div class="br-t">Looking over your accounts…</div><div class="br-st">3 accounts · 2 linked institutions</div></div></div><div class="br-rows"></div>`;
+  card.innerHTML = `<div class="br-head">${halo('search', 30)}<div><div class="br-t">Looking over your accounts…</div><div class="br-st">3 accounts · 4 linked institutions</div></div></div><div class="br-rows"></div>`;
   col.insertBefore(card, tiles); mood('search', 'Looking over your accounts…');
   const hq = $('.hq', card), rows = $('.br-rows', card);
   await wait(1700);
@@ -613,6 +660,7 @@ SB.reg('assistant', {
       const a = b.dataset.a;
       if (a === 'say') { const r = b.closest('.br-row'); if (r) r.classList.add('acted'); return handle(b.dataset.t); }
       if (a === 'share') return toast('Receipt saved. Share sheet opened.', 'share');
+      if (a === 'pwlater') { const c = b.closest('.pwcard'); if (c) c.classList.add('locked'); save(); return toast('I’ll remind you tomorrow', 'bell'); }
       if (a === 'tsize' || a === 'tmem') {
         const p = AS.pending; if (!p || p.k !== 'turkey' || AS.busy) return;
         if (a === 'tsize') p.size = +b.dataset.i; else p.on[+b.dataset.i] = !p.on[+b.dataset.i];

@@ -30,7 +30,7 @@ def inline_html():
     return html
 
 
-def main(version_code=13, version_name='1.7.3'):
+def main(version_code=14, version_name='1.7.4'):
     os.makedirs(OUT, exist_ok=True)
     html = inline_html()
     open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(html)
