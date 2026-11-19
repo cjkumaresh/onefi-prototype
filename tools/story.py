@@ -9,13 +9,15 @@ async def main():
         n=[0]
         async def shot(name,w=0):
             if w: await pg.wait_for_timeout(int(w*1.76))
-            n[0]+=1; await pg.screenshot(path=f'renders/story15/{n[0]:02d}_{name}.png')
+            n[0]+=1; await pg.screenshot(path=f'renders/story16/{n[0]:02d}_{name}.png')
         async def typenext():
             await pg.evaluate("(()=>{const i=document.querySelector('#ain');i.blur();i.focus();})()"); await pg.wait_for_timeout(2800)
         async def send(): await pg.evaluate("document.querySelector('#asend').click()")
         await typenext(); await shot('1_ask_pay_shroff')
         await send(); await shot('2_payment_in_progress',3000); await shot('3_payment_success',3600); await shot('3b_citi_password_alert',5200)
-        await typenext(); await send(); await shot('3c_citi_handoff',3600); await shot('3d_citi_password_updated',8600)
+        await typenext(); await send(); await pg.wait_for_timeout(4200)
+        await pg.fill('#pwo','OldPass#2025'); await pg.fill('#pwn','Harvest#Moon26'); await pg.fill('#pwc','Harvest#Moon26'); await shot('3c_citi_password_form',300)
+        await pg.click('#pwgo'); await shot('3d_citi_updating',1200); await shot('3e_citi_password_updated',9000)
         await typenext(); await send(); await shot('4_bill_in_progress',3000); await shot('5_bill_success',3600)
         await typenext(); await send(); await shot('6_td_analysing',3000); await shot('7_amex_recommendation',4200)
         await pg.evaluate("[...document.querySelectorAll('[data-t=\"Yes, go ahead\"]')].pop().click()"); await shot('8_creating_td',3000); await shot('9_td_success',3600)

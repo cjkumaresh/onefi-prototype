@@ -120,7 +120,7 @@ function setRail(items, noNext) {
 
 /* live activity card: ring + timeline */
 const STEP_ICONS = { send: ['shield', 'coins', 'send'], bill: ['receipt', 'bank', 'send'], td: ['user', 'bank', 'percent'], tdc: ['finger', 'swap', 'shield'], buy: ['bank', 'invest', 'repeat'], look: ['search', 'pie', 'spark'] };
-const SUMMARY = { pw: 'Secure handoff, Citi confirmed, connection refreshed', turkey: 'Kroger checked, turkeys in stock, slots open', tord: 'Addresses verified, paid, 6 deliveries scheduled', send: 'Payee verified, funds checked, sent securely', bill: 'Bill found, paid from Chequing, submitted', td: 'Accounts reviewed, 5 rates compared', tdc: 'Consent confirmed, funds moved, deposit opened', buy: 'E*TRADE linked, quote checked, order placed', look: 'Accounts analysed' };
+const SUMMARY = { pw: 'Verified, new password accepted, connection refreshed', turkey: 'Kroger checked, turkeys in stock, slots open', tord: 'Addresses verified, paid, 6 deliveries scheduled', send: 'Payee verified, funds checked, sent securely', bill: 'Bill found, paid from Chequing, submitted', td: 'Accounts reviewed, 5 rates compared', tdc: 'Consent confirmed, funds moved, deposit opened', buy: 'E*TRADE linked, quote checked, order placed', look: 'Accounts analysed' };
 const STEP_STATES = { pw: ['verify', 'search', 'verify'], turkey: ['search', 'search', 'compare'], tord: ['verify', 'send', 'send'], send: ['verify', 'search', 'send'], bill: ['search', 'bill', 'send'], td: ['search', 'search', 'compare'], tdc: ['verify', 'send', 'save'], buy: ['search', 'thinking', 'invest'], look: ['search', 'compare', 'thinking'] };
 function flowHTML(f) {
   return `<div class="mflow"><div class="mf-in">
@@ -394,14 +394,14 @@ const FLOWS = {
     const L = D.linked.citi;
     if (L.pwOk) { await botSay(col, `Your Citi password is up to date. The next change is due ${L.pwNext}.`); return; }
     $$('.pwcard').forEach(x => x.classList.add('locked'));
-    await botSay(col, 'I’ll open Citi’s secure page. You set the new password there, and OneFI only learns that it worked.', { dots: 200 });
-    await handoff();
-    const card = await progressCard(col, 'Refreshing your Citi connection', `Citi Checking ••${NB}${L.num}`, ['Secure handoff to Citi · Encrypted · OneFI never sees your password', 'Citi confirmed your new password · Changed on Citi’s secure page', 'Connection refreshed · Payments from Citi keep working'], 'pw');
+    await botSay(col, 'Enter your current password and pick a new one. I’ll send it encrypted to Citi, and OneFI never stores it.', { dots: 200 });
+    if (!(await pwChange())) { $$('.pwcard').forEach(x => x.classList.remove('locked')); await botSay(col, 'No problem. Your Citi password hasn’t changed. I’ll remind you before it expires.'); return; }
+    const card = await progressCard(col, 'Refreshing your Citi connection', `Citi Checking ••${NB}${L.num}`, ['Current password verified with Citi · Encrypted end to end', 'New password accepted by Citi · Meets Citi’s password rules', 'Connection refreshed · Payments from Citi keep working'], 'pw');
     card.remove();
     L.pwOk = true; L.pwNext = 'Feb 17, 2027';
     await botSay(col, 'All set. Your Citi password is updated and the connection is refreshed. 🔒', { dots: 200 });
     await finish(col, '', `<div class="pwcard done"><div class="pw-top">${BLOGO('citi', 'lg')}<span class="pw-pill ok"><b></b>Connected</span></div>
-      <div class="pw-h">Citi password updated</div><div class="pw-s">Changed on Citi’s secure page. Payments from Citi keep working.</div>
+      <div class="pw-h">Citi password updated</div><div class="pw-s">Your new password is active. Payments from Citi keep working.</div>
       <div class="pw-kv"><div><span>Account</span><span>Citi Checking ••${NB}${L.num}</span></div><div><span>Updated</span><span>${longDate()} · ${clock()}</span></div><div><span>Next change due</span><span>${L.pwNext}</span></div></div></div>`);
     AS.script = Math.max(AS.script, 2);
     setRail([{ t: 'Now pay my internet bill', i: 'bill' }, { t: 'My accounts', i: 'bank' }]);
@@ -514,21 +514,53 @@ async function pwAlert(col) {
   await wait(500 * PACE);
   await botSay(col, `One more thing: your Citi password expires in ${L.pwDays} days. If it lapses, payments from Citi stop until it’s updated.`, { dots: 300 });
   col.insertAdjacentHTML('beforeend', `<div class="pwcard"><div class="pw-top">${BLOGO('citi', 'lg')}<span class="pw-pill"><b></b>Expires in ${L.pwDays} days</span></div>
-    <div class="pw-h">Citi password expires soon</div><div class="pw-s">You’ll change it on Citi’s own secure page. OneFI never sees your password.</div>
-    <div class="cacts"><button class="o" data-a="pwlater"><span>Later</span></button><button class="f" data-a="say" data-t="Update my Citi password">${ic('lock', 'sm')}<span>Update on Citi</span></button></div></div>`);
+    <div class="pw-h">Citi password expires soon</div><div class="pw-s">Update it here in a few seconds. It’s sent encrypted to Citi, and OneFI never stores it.</div>
+    <div class="cacts"><button class="o" data-a="pwlater"><span>Later</span></button><button class="f" data-a="say" data-t="Update my Citi password">${ic('lock', 'sm')}<span>Update password</span></button></div></div>`);
   stamp(col); scrollEnd();
   setRail([{ t: 'Update my Citi password', i: 'lock' }, { t: 'Now pay my internet bill', i: 'bill' }]);
 }
-/* the bank's page is where the password changes; here we only show the handoff and its result */
-function handoff() {
+/* change the Citi password: current, new, confirm. Prototype only: values are never saved or sent anywhere. */
+function pwRules(v) { return [[v.length >= 8, '8+ characters'], [/[A-Z]/.test(v) && /[a-z]/.test(v), 'Upper and lower case'], [/\d/.test(v), 'A number'], [/[^A-Za-z0-9]/.test(v), 'A symbol']]; }
+function pwChange() {
   return new Promise(res => {
-    Sheet.open(`<div class="ho">${BLOGO('citi', 'xl')}<h3>Continue on Citi</h3><p>You’ll set your new password on Citi’s own secure page. OneFI never sees it.</p>
-      <div class="ho-st">${halo('verify', 30)}<span id="hot">Waiting for Citi to confirm…</span></div><div class="ho-lock">${ic('lock', 'xs')} Encrypted handoff · citi.com</div></div>`, {
+    let done = false; const finishOk = ok => { if (!done) { done = true; res(ok); } };
+    const field = (id, label, ph) => `<label class="pf"><span class="pf-l">${label}</span><span class="pf-w"><input id="${id}" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${ph}"><button type="button" class="pf-eye" data-for="${id}" aria-label="Show password">${ic('eye', 'sm')}</button></span></label>`;
+    Sheet.open(`<div class="pwf"><div class="pwf-h">${BLOGO('citi', 'lg')}<div><h3>Change Citi password</h3><div class="sub">Citi Checking ••${NB}${D.linked.citi.num} · expires in ${D.linked.citi.pwDays} days</div></div></div>
+      ${field('pwo', 'Current password', 'Enter current password')}
+      ${field('pwn', 'New password', 'Create a new password')}
+      <div class="pw-meter"><i></i><i></i><i></i><i></i></div>
+      <div class="pw-rules">${pwRules('').map(([, t]) => `<span>${ic('check', 'xs')}${t}</span>`).join('')}</div>
+      ${field('pwc', 'Confirm new password', 'Type it again')}
+      <div class="pwf-err" id="pwe"></div>
+      <button class="btn primary" id="pwgo" disabled>${ic('lock', 'sm')}<span>Update password</span></button>
+      <div class="pwf-note">${ic('shield', 'xs')}Sent encrypted to Citi. OneFI never stores your password.</div>
+      <div class="pwf-st" id="pws" hidden>${halo('verify', 30)}<span id="pwst">Updating with Citi…</span></div></div>`, {
       mount(sh) {
-        setTimeout(() => { const t = $('#hot', sh); if (!t) return; haloSet($('.ho-st .hq', sh), 'done'); t.textContent = 'Citi confirmed your new password'; haptic(14); }, 2600);
-        setTimeout(() => { Sheet.close(); setTimeout(res, 320); }, 3700);
+        const o = $('#pwo', sh), n = $('#pwn', sh), c = $('#pwc', sh), go = $('#pwgo', sh), err = $('#pwe', sh);
+        $$('.pf-eye', sh).forEach(b => b.onclick = () => { const inp = $('#' + b.dataset.for, sh); inp.type = inp.type === 'password' ? 'text' : 'password'; b.classList.toggle('on', inp.type === 'text'); });
+        const check = () => {
+          const r = pwRules(n.value), score = r.filter(x => x[0]).length;
+          $$('.pw-rules span', sh).forEach((el, k) => el.classList.toggle('ok', r[k][0]));
+          $$('.pw-meter i', sh).forEach((el, k) => el.className = k < score ? ['', 'w1', 'w2', 'w3', 'w4'][score] : '');
+          let e = '';
+          if (n.value && o.value && n.value === o.value) e = 'Your new password must be different from the current one.';
+          else if (c.value && c.value !== n.value) e = 'The new passwords don’t match.';
+          err.textContent = e;
+          go.disabled = !(o.value && score === 4 && c.value === n.value && !e);
+        };
+        [o, n, c].forEach(x => x.addEventListener('input', check));
+        go.onclick = async () => {
+          if (go.disabled) return;
+          [o, n, c].forEach(x => { x.value = ''; x.disabled = true; }); // nothing is kept
+          haptic(10); go.hidden = true; $('#pws', sh).hidden = false; err.textContent = '';
+          await wait(1600 * PACE);
+          haloSet($('#pws .hq', sh), 'done'); $('#pwst', sh).textContent = 'Citi accepted your new password'; haptic(14);
+          await wait(1000);
+          Sheet.close(); setTimeout(() => finishOk(true), 320);
+        };
+        setTimeout(() => o.focus(), 350);
       },
-      onClose() { setTimeout(res, 330); },
+      onClose() { setTimeout(() => finishOk(false), 330); },
     });
   });
 }

@@ -2,7 +2,7 @@
 
 OneFI is a clickable, offline prototype of a banking, payments and investing app with an AI assistant at its centre. It runs as an Android APK with no backend: all data is simulated, and the assistant's "thinking" and processing steps are staged so the app can be demoed end to end.
 
-Download the latest APK: [apk/OneFI-v1.7.4.apk](apk/OneFI-v1.7.4.apk).
+Download the latest APK: [apk/OneFI-v1.7.5.apk](apk/OneFI-v1.7.5.apk).
 
 ![Launch and briefing](docs/launch-and-briefing.png)
 
@@ -21,7 +21,7 @@ Download the latest APK: [apk/OneFI-v1.7.4.apk](apk/OneFI-v1.7.4.apk).
 ## Demo flow
 
 1. Pay $1,000 to Shroff from a linked Citi account.
-2. Update the expiring Citi password through a secure handoff to Citi (OneFI never sees the password).
+2. Change the expiring Citi password: current password, new password with strength rules, and confirmation.
 3. Pay the Rogers internet bill ($89.99) from BMO Harris.
 4. Open a $5,000 AMEX term deposit at 4.85% for 12 months (+$242.50).
 5. Buy 500 FIS through E*TRADE at $27.07.
@@ -29,13 +29,15 @@ Download the latest APK: [apk/OneFI-v1.7.4.apk](apk/OneFI-v1.7.4.apk).
 
 Any 4‑digit PIN, or the fingerprint button, unlocks the app and confirms actions. The ⋮ menu in OneFI has a demo mode that types each step for you, and an option to restart the demo.
 
-![Linked banks and the Citi password handoff](docs/logos-and-password.png)
+![Linked banks](docs/logos-and-password.png)
+
+![Citi password change](docs/citi-password-change.png)
 
 ![Thanksgiving flow](docs/thanksgiving-flow.png)
 
 ## Install
 
-Download [`apk/OneFI-v1.7.4.apk`](apk/OneFI-v1.7.4.apk) and open it on an Android phone (Android 7.0 or later). You'll need to allow installs from your browser or file manager. The APK is signed with a self-signed key.
+Download [`apk/OneFI-v1.7.5.apk`](apk/OneFI-v1.7.5.apk) and open it on an Android phone (Android 7.0 or later). You'll need to allow installs from your browser or file manager. The APK is signed with a self-signed key.
 
 ## Build from source
 
