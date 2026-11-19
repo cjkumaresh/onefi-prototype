@@ -1,0 +1,7 @@
+build/
+renders/
+*.key
+*.crt
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,0 +1,235 @@
+@font-face{font-family:"Instrument Serif";src:url(../fonts/InstrumentSerif-Regular.woff) format("woff");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"Instrument Serif";src:url(../fonts/InstrumentSerif-Italic.woff) format("woff");font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:"Instrument Sans";src:url(../fonts/InstrumentSans-Regular.woff) format("woff");font-weight:400 500;font-display:block}
+@font-face{font-family:"Instrument Sans";src:url(../fonts/InstrumentSans-Bold.woff) format("woff");font-weight:600 700;font-display:block}
+@font-face{font-family:"Inter";src:url(../fonts/Inter-Regular.woff) format("woff");font-weight:400;font-display:block}
+@font-face{font-family:"Inter";src:url(../fonts/Inter-Medium.woff) format("woff");font-weight:500;font-display:block}
+@font-face{font-family:"Inter";src:url(../fonts/Inter-SemiBold.woff) format("woff");font-weight:600 700;font-display:block}
+@font-face{font-family:"Inter Display";src:url(../fonts/InterDisplay-SemiBold.woff) format("woff");font-weight:500 600;font-display:block}
+@font-face{font-family:"Inter Display";src:url(../fonts/InterDisplay-Bold.woff) format("woff");font-weight:700 800;font-display:block}
+@font-face{font-family:"DM Sans";src:url(../fonts/DMSans.woff) format("woff");font-weight:100 1000;font-display:block}
+@font-face{font-family:"Outfit";src:url(../fonts/Outfit-Regular.woff) format("woff");font-weight:300 500;font-display:block}
+@font-face{font-family:"Outfit";src:url(../fonts/Outfit-Bold.woff) format("woff");font-weight:600 800;font-display:block}
+
+/* ───────────── Noir: private-bank, warm black, champagne, serif figures ───────────── */
+:root,[data-theme="noir"]{
+  --bg:#0D0C0B; --bg-img:radial-gradient(120% 60% at 50% -10%, #1d1a15 0%, rgba(13,12,11,0) 60%);
+  --surface:#161512; --surface-2:#1E1C18; --surface-3:#28251f; --sunk:#0a0908;
+  --line:rgba(243,237,225,.08); --line-2:rgba(243,237,225,.14);
+  --text:#F3EDE1; --text-2:#A39B8C; --text-3:#6E6759;
+  --accent:#D9BE86; --accent-2:#B8955C; --accent-soft:rgba(217,190,134,.12);
+  --accent-grad:linear-gradient(135deg,#EFDDB1 0%,#D2B074 48%,#A9844E 100%);
+  --on-accent:#1A1408;
+  --primary-bg:var(--accent-grad); --primary-fg:#1A1408;
+  --pos:#8DBF9F; --neg:#E0907E; --warn:#E2B866;
+  --pos-soft:rgba(141,191,159,.12); --neg-soft:rgba(224,144,126,.12);
+  --font-display:"Instrument Serif",Georgia,serif; --font-body:"Instrument Sans",system-ui,sans-serif;
+  --display-weight:400; --display-track:-.01em; --display-scale:1.18;
+  --cents-style:italic;
+  --r-xl:28px; --r-lg:20px; --r-md:14px; --r-sm:10px; --r-pill:999px;
+  --shadow:none; --shadow-lg:0 24px 60px rgba(0,0,0,.55);
+  --glass:none; --tab-bg:rgba(13,12,11,.86);
+  --card-art:linear-gradient(135deg,#2b2822 0%,#141310 55%,#0c0b0a 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(239,221,177,.16) 48%,rgba(255,255,255,0) 62%);
+  --card-fg:#EFDDB1; --card-line:rgba(239,221,177,.22);
+  --orb:conic-gradient(from 210deg,#EFDDB1,#8a6a3a,#2a2318,#D2B074,#EFDDB1);
+  --chart:#D9BE86; --chart-fill:rgba(217,190,134,.16);
+  --cat-1:#D9BE86;--cat-2:#8DBF9F;--cat-3:#9FB3D9;--cat-4:#C99BB5;--cat-5:#E0907E;--cat-6:#7f786b;
+  --status:"#0D0C0BD";
+}
+
+/* ───────────── Porcelain: clear, cool paper, ink buttons, emerald signal ───────────── */
+[data-theme="porcelain"]{
+  --bg:#F2F3F5; --bg-img:none;
+  --surface:#FFFFFF; --surface-2:#F7F8F9; --surface-3:#ECEEF1; --sunk:#E8EAEE;
+  --line:rgba(16,17,20,.07); --line-2:rgba(16,17,20,.13);
+  --text:#101114; --text-2:#62666F; --text-3:#9A9EA7;
+  --accent:#101114; --accent-2:#101114; --accent-soft:#E9EAED;
+  --accent-grad:linear-gradient(135deg,#2a2c31,#101114);
+  --on-accent:#FFFFFF;
+  --primary-bg:#101114; --primary-fg:#FFFFFF;
+  --pos:#1E7F4F; --neg:#C2452D; --warn:#9A6B12;
+  --pos-soft:#E6F2EB; --neg-soft:#FBEAE5;
+  --font-display:"Inter Display","Inter",system-ui,sans-serif; --font-body:"Inter",system-ui,sans-serif;
+  --display-weight:700; --display-track:-.035em; --display-scale:1;
+  --cents-style:normal;
+  --r-xl:30px; --r-lg:22px; --r-md:16px; --r-sm:11px; --r-pill:999px;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.05); --shadow-lg:0 24px 60px rgba(16,24,40,.16);
+  --glass:none; --tab-bg:rgba(255,255,255,.92);
+  --card-art:linear-gradient(140deg,#2b2d33 0%,#141518 55%,#08090a 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.14) 48%,rgba(255,255,255,0) 62%);
+  --card-fg:#FFFFFF; --card-line:rgba(255,255,255,.16); --card-shadow:0 14px 28px rgba(16,17,20,.22);
+  --orb:conic-gradient(from 200deg,#101114,#9a9ea7,#2a2c31,#f2f3f5,#101114);
+  --chart:#101114; --chart-fill:rgba(16,17,20,.08);
+  --cat-1:#101114;--cat-2:#4A4E57;--cat-3:#7C808A;--cat-4:#A6AAB2;--cat-5:#C9CCD2;--cat-6:#E1E3E7;
+  --status:"#F2F3F5L";
+  --primary:#101114; --on-primary:#FFFFFF; --primary-shadow:rgba(16,17,20,.25);
+  --hero:radial-gradient(120% 100% at 0% 0%,#2e3036 0%,#131417 55%,#08090a 100%);
+  --bubble:linear-gradient(180deg,#26282d 0%,#101114 100%);
+  --chat-bg:#F3F4F6; --chat-img:radial-gradient(120% 40% at 50% 0%,#FFFFFF 0%,rgba(255,255,255,0) 70%);
+  --glass-bg:rgba(255,255,255,.8); --track:#D5D7DC; --status-chat:"#FFFFFFL";
+}
+
+/* ───────────── Aurora: neobank, deep navy, glass, violet→cyan light ───────────── */
+[data-theme="aurora"]{
+  --bg:#070A1C;
+  --bg-img:radial-gradient(70% 45% at 0% 0%, rgba(140,107,255,.38) 0%, rgba(7,10,28,0) 70%),radial-gradient(60% 40% at 100% 30%, rgba(61,213,243,.18) 0%, rgba(7,10,28,0) 70%);
+  --surface:rgba(255,255,255,.055); --surface-2:rgba(255,255,255,.08); --surface-3:rgba(255,255,255,.12); --sunk:rgba(0,0,0,.25);
+  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.16);
+  --text:#EDF0FF; --text-2:#9AA2C7; --text-3:#646C92;
+  --accent:#A08BFF; --accent-2:#3DD5F3; --accent-soft:rgba(140,107,255,.18);
+  --accent-grad:linear-gradient(120deg,#8C6BFF 0%,#5C8DFF 50%,#3DD5F3 100%);
+  --on-accent:#FFFFFF;
+  --primary-bg:var(--accent-grad); --primary-fg:#FFFFFF;
+  --pos:#4BE3B0; --neg:#FF7C9C; --warn:#FFC266;
+  --pos-soft:rgba(75,227,176,.14); --neg-soft:rgba(255,124,156,.14);
+  --font-display:"Outfit","DM Sans",system-ui,sans-serif; --font-body:"DM Sans",system-ui,sans-serif;
+  --display-weight:600; --display-track:-.03em; --display-scale:1;
+  --cents-style:normal;
+  --r-xl:30px; --r-lg:24px; --r-md:16px; --r-sm:12px; --r-pill:999px;
+  --shadow:none; --shadow-lg:0 30px 80px rgba(0,0,10,.6);
+  --glass:blur(22px) saturate(140%); --tab-bg:rgba(10,14,36,.72);
+  --card-art:linear-gradient(125deg,#6B4DFF 0%,#4D6BFF 35%,#2BB8E8 70%,#5CF0D8 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 25%,rgba(255,255,255,.28) 45%,rgba(255,255,255,0) 60%);
+  --card-fg:#FFFFFF; --card-line:rgba(255,255,255,.3); --card-shadow:0 18px 40px rgba(80,90,255,.35);
+  --orb:conic-gradient(from 180deg,#8C6BFF,#3DD5F3,#5CF0D8,#FF7CE0,#8C6BFF);
+  --chart:#8C9BFF; --chart-fill:rgba(140,107,255,.22);
+  --cat-1:#8C6BFF;--cat-2:#3DD5F3;--cat-3:#4BE3B0;--cat-4:#FFC266;--cat-5:#FF7C9C;--cat-6:#646C92;
+  --status:"#070A1CD";
+}
+
+/* ───────── Palette: Azure (storyboard brand blue #0079C1) ───────── */
+html[data-palette="azure"]{
+  --bg:#F2F6FA; --surface:#FFFFFF; --surface-2:#F6F9FC; --surface-3:#E7EDF4; --sunk:#E3EAF2;
+  --line:rgba(11,27,43,.07); --line-2:rgba(11,27,43,.13);
+  --text:#0B1B2B; --text-2:#5A6A7B; --text-3:#93A1B0;
+  --primary:#0079C1; --on-primary:#FFFFFF; --primary-shadow:rgba(0,121,193,.3);
+  --accent:#0079C1; --accent-2:#005E96; --accent-soft:#E2F0FA;
+  --accent-grad:linear-gradient(135deg,#1A9BE6,#005E96);
+  --primary-bg:#0079C1; --primary-fg:#FFFFFF;
+  --pos:#12855A; --neg:#D0443A; --warn:#B7791F; --pos-soft:#E3F4EC; --neg-soft:#FCEBE9;
+  --hero:radial-gradient(130% 120% at 0% 0%,#22A6EE 0%,#0079C1 42%,#004A79 100%);
+  --bubble:linear-gradient(180deg,#0A8AD6 0%,#0072B6 100%);
+  --chat-bg:#EFF4F9; --chat-img:radial-gradient(120% 40% at 50% 0%,#FFFFFF 0%,rgba(255,255,255,0) 70%);
+  --glass-bg:rgba(255,255,255,.82); --track:#CFD9E4;
+  --tab-bg:rgba(255,255,255,.92);
+  --card-art:linear-gradient(140deg,#1EA3EC 0%,#0079C1 45%,#003F68 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.2) 48%,rgba(255,255,255,0) 62%);
+  --card-shadow:0 16px 32px rgba(0,94,150,.3);
+  --chart:#0079C1; --chart-fill:rgba(0,121,193,.1);
+  --cat-1:#0079C1;--cat-2:#38B2E8;--cat-3:#0B1B2B;--cat-4:#7FCBEF;--cat-5:#5A6A7B;--cat-6:#CFD9E4;
+  --status:"#F2F6FAL"; --status-chat:"#FFFFFFL";
+}
+/* ───────── Palette: Midnight (dark, blue light) ───────── */
+html[data-palette="midnight"]{
+  --bg:#0B0E14; --bg-img:radial-gradient(90% 40% at 50% -10%,#16203a 0%,rgba(11,14,20,0) 70%);
+  --surface:#141923; --surface-2:#1A202B; --surface-3:#232B38; --sunk:#090B10;
+  --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.13);
+  --text:#EDF1F7; --text-2:#97A2B4; --text-3:#5E6A7D;
+  --primary:#3D8BFF; --on-primary:#FFFFFF; --primary-shadow:rgba(61,139,255,.35);
+  --accent:#5B9DFF; --accent-2:#3D8BFF; --accent-soft:rgba(61,139,255,.16);
+  --accent-grad:linear-gradient(135deg,#5B9DFF,#2F6FE0);
+  --primary-bg:#3D8BFF; --primary-fg:#FFFFFF;
+  --pos:#3DD68C; --neg:#FF6B6B; --warn:#F5B947; --pos-soft:rgba(61,214,140,.14); --neg-soft:rgba(255,107,107,.14);
+  --shadow:0 1px 0 rgba(255,255,255,.03),0 8px 24px rgba(0,0,0,.3); --shadow-lg:0 24px 60px rgba(0,0,0,.55);
+  --hero:radial-gradient(130% 120% at 0% 0%,#2B3D5E 0%,#182131 48%,#0F141D 100%);
+  --bubble:linear-gradient(180deg,#4C96FF 0%,#2F7BEF 100%);
+  --chat-bg:#0B0E14; --chat-img:radial-gradient(120% 40% at 50% 0%,#141b2a 0%,rgba(11,14,20,0) 70%);
+  --glass-bg:rgba(13,17,25,.82); --track:#2E3746;
+  --tab-bg:rgba(20,25,35,.9);
+  --card-art:linear-gradient(140deg,#2a3448 0%,#151b26 55%,#0b0f16 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 30%,rgba(140,180,255,.16) 48%,rgba(255,255,255,0) 62%);
+  --card-shadow:0 18px 36px rgba(0,0,0,.5);
+  --chart:#5B9DFF; --chart-fill:rgba(61,139,255,.16);
+  --cat-1:#3D8BFF;--cat-2:#7DB3FF;--cat-3:#3DD68C;--cat-4:#C3D6F5;--cat-5:#5E6A7D;--cat-6:#2E3746;
+  --status:"#0B0E14D"; --status-chat:"#0F131AD";
+}
+
+/* ───────── Liquid Glass — light ───────── */
+html[data-palette="glass"]{
+  --bg:#EEF1F7;
+  --bg-img:radial-gradient(55% 38% at 0% 22%,rgba(110,155,255,.55) 0%,rgba(110,155,255,0) 70%),radial-gradient(50% 36% at 100% 34%,rgba(255,140,200,.42) 0%,rgba(255,140,200,0) 70%),radial-gradient(60% 40% at 18% 82%,rgba(90,225,195,.38) 0%,rgba(90,225,195,0) 70%),radial-gradient(55% 38% at 95% 98%,rgba(255,190,110,.40) 0%,rgba(255,190,110,0) 70%);
+  --surface:rgba(255,255,255,.5); --surface-2:rgba(255,255,255,.62); --surface-3:rgba(60,72,110,.11); --sunk:rgba(60,72,110,.08);
+  --line:rgba(30,40,80,.08); --line-2:rgba(30,40,80,.13);
+  --text:#0A0F1E; --text-2:rgba(10,15,30,.62); --text-3:rgba(10,15,30,.40);
+  --primary:#0A84FF; --on-primary:#FFFFFF; --primary-shadow:rgba(10,132,255,.32);
+  --accent:#0A84FF; --accent-2:#0066D6; --accent-soft:rgba(10,132,255,.14);
+  --accent-grad:linear-gradient(135deg,#2D95FF,#5E5CE6);
+  --primary-bg:#0A84FF; --primary-fg:#FFFFFF;
+  --pos:#1E9E52; --neg:#E5484D; --warn:#C27C0E; --pos-soft:rgba(48,209,88,.16); --neg-soft:rgba(255,69,58,.12);
+  --shadow:0 8px 30px rgba(40,60,130,.10),0 1px 2px rgba(40,60,130,.06); --shadow-lg:0 24px 60px rgba(40,60,130,.22);
+  --glass:blur(26px) saturate(190%);
+  --sheen:linear-gradient(150deg,rgba(255,255,255,.62) 0%,rgba(255,255,255,.16) 36%,rgba(255,255,255,0) 62%);
+  --rim:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.5),inset 0 -1px 1px rgba(255,255,255,.3);
+  --hero:linear-gradient(140deg,rgba(10,132,255,.86) 0%,rgba(94,92,230,.80) 100%);
+  --bubble:linear-gradient(180deg,#2D95FF 0%,#0A78F0 100%);
+  --chat-bg:#EEF1F7; --chat-img:var(--bg-img);
+  --glass-bg:rgba(255,255,255,.42); --sheet-bg:rgba(246,248,253,.74); --track:rgba(30,40,80,.15);
+  --tab-bg:rgba(255,255,255,.78);
+  --card-art:linear-gradient(135deg,rgba(10,132,255,.92) 0%,rgba(94,92,230,.88) 55%,rgba(191,90,242,.85) 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 25%,rgba(255,255,255,.35) 45%,rgba(255,255,255,0) 60%);
+  --card-shadow:0 18px 40px rgba(60,80,200,.28); --card-line:rgba(255,255,255,.45);
+  --chart:#0A84FF; --chart-fill:rgba(10,132,255,.12);
+  --cat-1:#0A84FF;--cat-2:#5E5CE6;--cat-3:#30D158;--cat-4:#FF9F0A;--cat-5:#FF375F;--cat-6:#64D2FF;
+  --status:"#EEF1F7L"; --status-chat:"#EEF1F7L";
+}
+/* ───────── Liquid Glass — dark ───────── */
+html[data-palette="glass-dark"]{
+  --bg:#05060B;
+  --bg-img:radial-gradient(55% 38% at 0% 22%,rgba(60,90,255,.50) 0%,rgba(60,90,255,0) 70%),radial-gradient(50% 36% at 100% 36%,rgba(190,60,210,.38) 0%,rgba(190,60,210,0) 70%),radial-gradient(60% 40% at 15% 84%,rgba(0,170,160,.32) 0%,rgba(0,170,160,0) 70%),radial-gradient(55% 38% at 95% 98%,rgba(255,110,60,.26) 0%,rgba(255,110,60,0) 70%);
+  --surface:rgba(255,255,255,.075); --surface-2:rgba(255,255,255,.11); --surface-3:rgba(255,255,255,.14); --sunk:rgba(0,0,0,.25);
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.15);
+  --text:#F5F7FF; --text-2:rgba(235,240,255,.66); --text-3:rgba(235,240,255,.40);
+  --primary:#0A84FF; --on-primary:#FFFFFF; --primary-shadow:rgba(10,132,255,.45);
+  --accent:#4DA3FF; --accent-2:#0A84FF; --accent-soft:rgba(10,132,255,.2);
+  --accent-grad:linear-gradient(135deg,#2D95FF,#5E5CE6);
+  --primary-bg:#0A84FF; --primary-fg:#FFFFFF;
+  --pos:#32D74B; --neg:#FF453A; --warn:#FFD60A; --pos-soft:rgba(50,215,75,.15); --neg-soft:rgba(255,69,58,.15);
+  --shadow:0 10px 34px rgba(0,0,0,.42); --shadow-lg:0 26px 70px rgba(0,0,0,.6);
+  --glass:blur(28px) saturate(170%);
+  --sheen:linear-gradient(150deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.04) 38%,rgba(255,255,255,0) 62%);
+  --rim:inset 0 1px 0 rgba(255,255,255,.24),inset 0 0 0 1px rgba(255,255,255,.10),inset 0 -1px 1px rgba(255,255,255,.05);
+  --hero:linear-gradient(140deg,rgba(10,132,255,.62) 0%,rgba(94,92,230,.55) 100%);
+  --bubble:linear-gradient(180deg,#2D95FF 0%,#0A78F0 100%);
+  --chat-bg:#05060B; --chat-img:var(--bg-img);
+  --glass-bg:rgba(18,20,32,.45); --sheet-bg:rgba(24,26,40,.72); --track:rgba(255,255,255,.16);
+  --tab-bg:rgba(28,30,46,.78);
+  --card-art:linear-gradient(135deg,rgba(10,132,255,.75) 0%,rgba(94,92,230,.7) 55%,rgba(191,90,242,.65) 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 25%,rgba(255,255,255,.22) 45%,rgba(255,255,255,0) 60%);
+  --card-shadow:0 18px 40px rgba(0,0,0,.5); --card-line:rgba(255,255,255,.25);
+  --chart:#4DA3FF; --chart-fill:rgba(10,132,255,.18);
+  --cat-1:#0A84FF;--cat-2:#5E5CE6;--cat-3:#32D74B;--cat-4:#FF9F0A;--cat-5:#FF375F;--cat-6:#64D2FF;
+  --status:"#05060BD"; --status-chat:"#05060BD";
+}
+
+/* ───────── Aura (default): soft pastel, frosted white, charcoal ───────── */
+html[data-palette="aura"]{
+  --bg:#F3F3F7;
+  --bg-img:radial-gradient(70% 36% at 0% 14%,rgba(176,196,255,.72) 0%,rgba(176,196,255,0) 70%),radial-gradient(60% 34% at 100% 34%,rgba(214,236,226,.9) 0%,rgba(214,236,226,0) 70%),radial-gradient(70% 40% at 90% 80%,rgba(255,214,228,.85) 0%,rgba(255,214,228,0) 70%),radial-gradient(60% 34% at 0% 97%,rgba(232,226,255,.9) 0%,rgba(232,226,255,0) 70%);
+  --surface:rgba(255,255,255,.6); --surface-2:rgba(255,255,255,.74); --surface-3:rgba(28,28,31,.07); --sunk:rgba(28,28,31,.05);
+  --line:rgba(28,28,31,.07); --line-2:rgba(28,28,31,.12);
+  --text:#1C1C1F; --text-2:#686873; --text-3:#9A9AA5;
+  --primary:#1C1C1F; --on-primary:#FFFFFF; --primary-shadow:rgba(28,28,31,.22);
+  --accent:#1C1C1F; --accent-2:#1C1C1F; --accent-soft:rgba(28,28,31,.07);
+  --accent-grad:linear-gradient(135deg,#3a3a40,#1C1C1F);
+  --primary-bg:#1C1C1F; --primary-fg:#FFFFFF;
+  --pos:#1E7F4F; --neg:#C2412F; --warn:#A0670E; --pos-soft:rgba(48,180,100,.13); --neg-soft:rgba(229,72,77,.11);
+  --font-display:"DM Sans",system-ui,sans-serif; --font-body:"DM Sans",system-ui,sans-serif;
+  --display-weight:500; --display-track:-.035em; --display-scale:1;
+  --r-xl:28px; --r-lg:22px; --r-md:18px; --r-sm:12px;
+  --shadow:0 8px 22px rgba(60,60,110,.07); --shadow-lg:0 14px 34px rgba(60,60,110,.14);
+  --glass:blur(20px) saturate(160%);
+  --sheen:linear-gradient(150deg,rgba(255,255,255,.7) 0%,rgba(255,255,255,.15) 40%,rgba(255,255,255,0) 65%);
+  --rim:inset 0 1px 0 #fff,inset 0 0 0 1px rgba(255,255,255,.6);
+  --hero:linear-gradient(150deg,#34343A 0%,#1C1C1F 60%,#111113 100%);
+  --bubble:rgba(255,255,255,.66);
+  --chat-bg:#F3F3F7; --chat-img:var(--bg-img);
+  --glass-bg:rgba(255,255,255,.5); --sheet-bg:rgba(248,248,251,.84); --track:rgba(28,28,31,.12);
+  --tab-bg:rgba(255,255,255,.74);
+  --card-art:linear-gradient(135deg,#CBD5FF 0%,#F2D3E4 52%,#D2F0E6 100%);
+  --card-sheen:linear-gradient(115deg,rgba(255,255,255,0) 25%,rgba(255,255,255,.55) 45%,rgba(255,255,255,0) 60%);
+  --card-fg:#1C1C1F; --card-line:rgba(255,255,255,.8); --card-shadow:0 16px 34px rgba(90,90,160,.18);
+  --chart:#1C1C1F; --chart-fill:rgba(28,28,31,.08);
+  --cat-1:#1C1C1F;--cat-2:#7B86F0;--cat-3:#E792B6;--cat-4:#5EC3A5;--cat-5:#F1A95E;--cat-6:#C3C3CF;
+  --status:"#ECEEF8L"; --status-chat:"#ECEEF8L";
+}
