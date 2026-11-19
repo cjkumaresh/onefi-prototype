@@ -2,7 +2,7 @@
 
 OneFI is a clickable, offline prototype of a banking, payments and investing app with an AI assistant at its centre. It runs as an Android APK with no backend: all data is simulated, and the assistant's "thinking" and processing steps are staged so the app can be demoed end to end.
 
-Download the latest APK from [Releases](../../releases).
+Download the latest APK: [apk/OneFI-v1.7.3.apk](apk/OneFI-v1.7.3.apk).
 
 ![Launch and briefing](docs/launch-and-briefing.png)
 
@@ -32,7 +32,7 @@ Any 4‑digit PIN, or the fingerprint button, unlocks the app and confirms actio
 
 ## Install
 
-Download `OneFI-v1.7.3.apk` from Releases and open it on an Android phone (Android 7.0 or later). You'll need to allow installs from your browser or file manager. The APK is signed with a self-signed key.
+Download [`apk/OneFI-v1.7.3.apk`](apk/OneFI-v1.7.3.apk) and open it on an Android phone (Android 7.0 or later). You'll need to allow installs from your browser or file manager. The APK is signed with a self-signed key.
 
 ## Build from source
 
@@ -58,6 +58,7 @@ The app itself is plain HTML, CSS and JavaScript in `web/`. To preview it in a b
 web/            the app: index.html, css/, js/, fonts/
 tools/          dex.py, apk.py, shell.py (WebView shell + speech), build.py, icons.py, tests
 docs/           screenshots
+apk/            the latest built APK
 ```
 
 ## Notes
